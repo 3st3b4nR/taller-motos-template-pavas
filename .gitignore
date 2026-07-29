@@ -1,0 +1,8 @@
+.review/
+.source/
+.template/
+.pnpm-store/
+**/node_modules/
+**/.env
+**/dist/
+server/logs/*.log
