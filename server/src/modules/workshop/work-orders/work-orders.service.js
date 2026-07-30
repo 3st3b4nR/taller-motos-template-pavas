@@ -83,8 +83,10 @@ export const list = async ({ status = "", plate = "", page = 1, pageSize = 10 })
   const where = "WHERE (? = '' OR wo.status = ?) AND (? = '' OR b.plate LIKE CONCAT('%', ?, '%'))";
   const params = [status, status, plate, plate.toUpperCase()];
   const rows = await executeQuery(
-    `${ORDER_SELECT} ${where} ORDER BY wo.created_at DESC LIMIT ? OFFSET ?`,
-    [...params, size, offset]
+  `${ORDER_SELECT} ${where}
+   ORDER BY wo.created_at DESC
+   LIMIT ${size} OFFSET ${offset}`,
+  params
   );
   const count = await executeQuery(
     `SELECT COUNT(*) total FROM work_orders wo JOIN bikes b ON b.id = wo.moto_id ${where}`,
@@ -138,14 +140,15 @@ export const history = async (id, { page = 1, pageSize = 50 }) => {
   const size = Math.min(100, Math.max(1, Number.parseInt(pageSize, 10) || 50));
   const offset = (currentPage - 1) * size;
   const rows = await executeQuery(
-    `SELECT h.id, h.work_order_id workOrderId, h.from_status fromStatus,
-            h.to_status toStatus, h.note, h.created_at createdAt,
-            u.id userId, u.name userName, u.role userRole
-     FROM work_order_status_history h
-     JOIN users u ON u.id = h.changed_by_user_id
-     WHERE h.work_order_id = ?
-     ORDER BY h.created_at DESC LIMIT ? OFFSET ?`,
-    [id, size, offset]
+  `SELECT h.id, h.work_order_id workOrderId, h.from_status fromStatus,
+          h.to_status toStatus, h.note, h.created_at createdAt,
+          u.id userId, u.name userName, u.role userRole
+   FROM work_order_status_history h
+   JOIN users u ON u.id = h.changed_by_user_id
+   WHERE h.work_order_id = ?
+   ORDER BY h.created_at DESC
+   LIMIT ${size} OFFSET ${offset}`,
+  [id]
   );
   const count = await executeQuery("SELECT COUNT(*) total FROM work_order_status_history WHERE work_order_id = ?", [id]);
   const total = Number(count[0].total);
