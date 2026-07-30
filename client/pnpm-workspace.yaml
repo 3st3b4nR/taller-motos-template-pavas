@@ -1,9 +1,9 @@
 allowBuilds:
-  '@firebase/util': set this to true or false
-  '@parcel/watcher': set this to true or false
-  core-js: set this to true or false
-  esbuild: set this to true or false
-  protobufjs: set this to true or false
+  '@firebase/util': true
+  '@parcel/watcher': true
+  core-js: true
+  esbuild: true
+  protobufjs: true
 overrides:
   motion-dom: 12.23.23
   motion-utils: 12.23.6
