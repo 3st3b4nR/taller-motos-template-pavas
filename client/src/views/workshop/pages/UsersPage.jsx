@@ -90,7 +90,7 @@ export default function UsersPage() {
           <div className="loading-center"><div className="spinner spinner-lg" /><span>Cargando usuarios...</span></div>
         ) : (
           <div className="table-wrap" style={{ border: 'none', borderRadius: 'var(--radius-lg)' }}>
-            <table>
+            <table className="mobile-card-table users-table">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -103,22 +103,22 @@ export default function UsersPage() {
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id}>
-                    <td>
+                    <td className="mobile-primary" data-label="Nombre">
                       <strong>{u.name}</strong>
                       {u.id === me.id && <span className="xs" style={{ marginLeft: 6 }}>(tú)</span>}
                     </td>
-                    <td className="muted">{u.email}</td>
-                    <td>
+                    <td className="muted" data-label="Email">{u.email}</td>
+                    <td data-label="Rol">
                       <span className={`badge ${u.role === 'ADMIN' ? 'badge-LISTA' : 'badge-EN_PROCESO'}`}>
                         {u.role}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Estado">
                       <span className={`badge ${u.active ? 'badge-LISTA' : 'badge-CANCELADA'}`}>
                         {u.active ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
-                    <td>
+                    <td className="mobile-actions" data-label="Acciones">
                       <div className="flex gap-2">
                         {u.id !== me.id && (
                           <>

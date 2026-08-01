@@ -106,7 +106,7 @@ export default function OrdersListPage() {
           </div>
         ) : (
           <div className="table-wrap" style={{ border: 'none', borderRadius: 'var(--radius-lg)' }}>
-            <table>
+            <table className="mobile-card-table orders-table">
               <thead>
                 <tr>
                   <th>#</th>
@@ -125,16 +125,16 @@ export default function OrdersListPage() {
                     style={{ cursor: 'pointer' }}
                     onClick={() => navigate(`/orders/${o.id}`)}
                   >
-                    <td className="muted">#{o.id}</td>
-                    <td>
+                    <td className="muted" data-label="Orden">#{o.id}</td>
+                    <td className="mobile-primary" data-label="Moto">
                       <span className="plate-text">{o.bike?.plate}</span>
                       <div className="xs">{o.bike?.brand} {o.bike?.model}</div>
                     </td>
-                    <td>{o.bike?.client?.name}</td>
-                    <td><StatusBadge status={o.status} /></td>
-                    <td className="muted">{o.entryDate}</td>
-                    <td className="money">{fmt(o.total)}</td>
-                    <td>
+                    <td data-label="Cliente">{o.bike?.client?.name}</td>
+                    <td data-label="Estado"><StatusBadge status={o.status} /></td>
+                    <td className="muted" data-label="Ingreso">{o.entryDate}</td>
+                    <td className="money" data-label="Total">{fmt(o.total)}</td>
+                    <td className="mobile-actions" data-label="Acciones">
                       <button
                         className="btn btn-ghost btn-sm"
                         onClick={(e) => { e.stopPropagation(); navigate(`/orders/${o.id}`); }}

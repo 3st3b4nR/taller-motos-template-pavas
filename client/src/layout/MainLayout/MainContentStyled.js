@@ -45,15 +45,18 @@ const MainContentStyled = styled('main', {
   }),
   [theme.breakpoints.down('md')]: {
     marginLeft: 20,
+    marginRight: 20,
     padding: 16,
     marginTop: 88,
-    ...(!open && {
-      width: `calc(100% - ${drawerWidth}px)`
-    })
+    width: 'calc(100% - 40px)'
   },
   [theme.breakpoints.down('sm')]: {
-    marginLeft: 10,
-    marginRight: 10
+    marginLeft: 8,
+    marginRight: 8,
+    marginTop: 80,
+    padding: 12,
+    width: 'calc(100% - 16px)',
+    borderRadius: `${Math.min(borderRadius, 10)}px`
   }
 }));
 

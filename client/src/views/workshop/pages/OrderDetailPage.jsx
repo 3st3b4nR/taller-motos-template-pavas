@@ -105,7 +105,7 @@ function TabItems({ order, canEdit, onRefresh }) {
     <div>
       <ErrorBanner message={error} onClose={() => setError('')} />
       <div className="table-wrap">
-        <table>
+        <table className="mobile-card-table items-table">
           <thead>
             <tr>
               <th>Tipo</th><th>Descripción</th><th>Cant.</th>
@@ -115,7 +115,7 @@ function TabItems({ order, canEdit, onRefresh }) {
           </thead>
           <tbody>
             {order.items?.length === 0 ? (
-              <tr><td colSpan={canEdit ? 6 : 5}>
+              <tr><td className="mobile-empty" colSpan={canEdit ? 6 : 5}>
                 <div className="empty-state" style={{ padding: '24px 0' }}>
                   <div className="empty-icon">🔧</div>
                   <p>Sin ítems registrados aún.</p>
@@ -124,17 +124,17 @@ function TabItems({ order, canEdit, onRefresh }) {
             ) : (
               order.items.map((it) => (
                 <tr key={it.id}>
-                  <td>
+                  <td data-label="Tipo">
                     <span className={`badge ${it.type === 'MANO_OBRA' ? 'badge-EN_PROCESO' : 'badge-LISTA'}`}>
                       {it.type === 'MANO_OBRA' ? 'Mano de obra' : 'Repuesto'}
                     </span>
                   </td>
-                  <td>{it.description}</td>
-                  <td>{it.count}</td>
-                  <td className="money">{fmt(it.unitValue)}</td>
-                  <td className="money">{fmt(it.count * it.unitValue)}</td>
+                  <td className="mobile-primary" data-label="Descripción">{it.description}</td>
+                  <td data-label="Cantidad">{it.count}</td>
+                  <td className="money" data-label="Valor unitario">{fmt(it.unitValue)}</td>
+                  <td className="money" data-label="Subtotal">{fmt(it.count * it.unitValue)}</td>
                   {canEdit && (
-                    <td>
+                    <td className="mobile-actions" data-label="Acciones">
                       <button className="icon-btn" title="Eliminar" onClick={() => handleDelete(it.id)}>🗑</button>
                     </td>
                   )}
@@ -144,9 +144,9 @@ function TabItems({ order, canEdit, onRefresh }) {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={4}><strong>Total de la orden</strong></td>
-              <td className="money" style={{ fontSize: 15 }}>{fmt(order.total)}</td>
-              {canEdit && <td />}
+              <td className="mobile-total-label" colSpan={4}><strong>Total de la orden</strong></td>
+              <td className="money mobile-total-value" style={{ fontSize: 15 }}>{fmt(order.total)}</td>
+              {canEdit && <td className="mobile-total-spacer" />}
             </tr>
           </tfoot>
         </table>
