@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import pavasLogo from 'assets/images/logo-pavas.png?inline';
 import { STATUS_LABELS } from './workOrderStatus';
 
 const ORANGE = [241, 145, 0];
@@ -71,27 +72,21 @@ export const createWorkOrderReceiptPdf = (order) => {
   const client = bike.client ?? {};
   const items = Array.isArray(order.items) ? order.items : [];
 
-  doc.setFillColor(...INK);
-  doc.rect(0, 0, 210, 31, 'F');
-  doc.setFillColor(...ORANGE);
-  doc.roundedRect(14, 8, 14, 14, 3, 3, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(17);
-  doc.setTextColor(255, 255, 255);
-  doc.text('P', 21, 18.5, { align: 'center' });
-  doc.setFontSize(18);
-  doc.text('PAVAS', 33, 15.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7.5);
-  doc.text('TALLER DE MOTOS', 33, 21);
+  doc.addImage(pavasLogo, 'PNG', 14, 7, 60, 14.7, 'pavas-logo', 'FAST');
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
+  doc.setTextColor(...INK);
   doc.text('RECIBO DE SERVICIO', 196, 13, { align: 'right' });
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
   doc.text(`Orden #${valueOrDash(order.id)}`, 196, 20, { align: 'right' });
   doc.text(`Estado: ${STATUS_LABELS[order.status] ?? valueOrDash(order.status)}`, 196, 25, { align: 'right' });
+
+  doc.setDrawColor(...ORANGE);
+  doc.setLineWidth(1.2);
+  doc.line(14, 30, 196, 30);
 
   drawSectionTitle(doc, 'Datos del cliente y la moto', 41);
   doc.setFillColor(...LIGHT);
