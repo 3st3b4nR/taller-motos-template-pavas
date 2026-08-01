@@ -724,6 +724,21 @@ tr.total-row td { font-weight: 700; font-size: 14px; }
   gap: 12px;
 }
 
+.order-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .order-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 /* Tabs */
 .tabs-bar {
   display: flex;

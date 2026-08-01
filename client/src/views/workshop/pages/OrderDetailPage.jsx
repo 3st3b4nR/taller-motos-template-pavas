@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { workOrderService } from '../services/workOrderService';
 import { getErrorMessage } from '../utils/getErrorMessage';
 import { STATUS_LABELS, STATUS_TRANSITIONS } from '../utils/workOrderStatus';
+import { downloadWorkOrderReceiptPdf } from '../utils/workOrderReceiptPdf';
 import { useAuth } from 'contexts/AuthContext';
 import StatusBadge from '../components/StatusBadge';
 import StatusStepper from '../components/StatusStepper';
@@ -193,7 +194,7 @@ function TabItems({ order, canEdit, onRefresh }) {
    Tab: Estado
 ────────────────────────────────────────────── */
 function TabEstado({ order, onRefresh }) {
-  const { isAdmin, user } = useAuth();
+  const { isAdmin } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null);
   const [note, setNote] = useState('');
   const [changing, setChanging] = useState(false);
@@ -324,11 +325,6 @@ function TabHistorial({ orderId }) {
 
   if (loading) return <Spinner center label="Cargando historial..." />;
 
-  const STATUS_ICONS = {
-    RECIBIDA: '📋', DIAGNOSTICO: '🔍', EN_PROCESO: '🔧',
-    LISTA: '✅', ENTREGADA: '🏍️', CANCELADA: '✕',
-  };
-
   return (
     <div>
       <ErrorBanner message={error} onClose={() => setError('')} />
@@ -426,6 +422,7 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('info');
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   const fetchOrder = useCallback(async () => {
     setError('');
@@ -441,6 +438,19 @@ export default function OrderDetailPage() {
 
   useEffect(() => { fetchOrder(); }, [fetchOrder]);
 
+  const handleDownloadReceipt = () => {
+    setError('');
+    setExportingPdf(true);
+
+    try {
+      downloadWorkOrderReceiptPdf(order);
+    } catch (err) {
+      setError(err?.message || 'No fue posible generar el recibo PDF.');
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
   const canEdit = order && !['ENTREGADA', 'CANCELADA'].includes(order.status);
 
   if (loading) return <Spinner center label="Cargando orden..." />;
@@ -455,17 +465,24 @@ export default function OrderDetailPage() {
     <div>
       <button className="back-link" onClick={() => navigate('/')}>← Volver al listado</button>
 
+      <ErrorBanner message={error} onClose={() => setError('')} />
+
       <div className="page-header">
         <div className="flex items-center gap-3">
           <h1 className="page-title">Orden #{order.id}</h1>
           <StatusBadge status={order.status} />
         </div>
-        <div className="flex items-center gap-2 muted" style={{ fontSize: 13 }}>
-          <span className="plate-text">{order.bike?.plate}</span>
-          <span>·</span>
-          <span>{order.bike?.client?.name}</span>
-          <span>·</span>
-          <span>{order.entryDate}</span>
+        <div className="order-header-actions">
+          <div className="flex items-center gap-2 muted" style={{ fontSize: 13 }}>
+            <span className="plate-text">{order.bike?.plate}</span>
+            <span>·</span>
+            <span>{order.bike?.client?.name}</span>
+            <span>·</span>
+            <span>{order.entryDate}</span>
+          </div>
+          <button className="btn btn-primary" type="button" onClick={handleDownloadReceipt} disabled={exportingPdf}>
+            {exportingPdf ? 'Generando...' : '↓ Descargar recibo PDF'}
+          </button>
         </div>
       </div>
 
