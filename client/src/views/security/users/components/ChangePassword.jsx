@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useAuth } from 'contexts/AuthContext';
 import { showSuccess, showError } from 'services/ToastService';
 import GenericFormSection from 'ui-component/extended/GenericFormSection';
 import Button from '@mui/material/Button';
@@ -8,7 +7,6 @@ import Stack from '@mui/material/Stack';
 import { updatePasswordAPI } from 'api/requests/usersApi';
 
 export const ChangePassword = () => {
-  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const methods = useForm({
@@ -49,8 +47,7 @@ export const ChangePassword = () => {
     try {
       const { data } = await updatePasswordAPI({
         currentPassword,
-        newPassword,
-        useId: user.useId,
+        newPassword
       });
       showSuccess(data.message);
       reset();

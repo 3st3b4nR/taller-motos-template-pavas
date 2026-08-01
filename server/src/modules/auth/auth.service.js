@@ -54,6 +54,66 @@ export const listUsers = async () => {
   return users.map(toPublicUser);
 };
 
+export const updateAccount = async (id, { name, email }) => {
+  const normalizedName = String(name ?? "").trim();
+  const normalizedEmail = String(email ?? "").trim().toLowerCase();
+
+  if (!normalizedName || !normalizedEmail) {
+    throw httpError(400, "Nombre y correo electrónico son obligatorios");
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+    throw httpError(400, "El correo electrónico no es válido");
+  }
+
+  const duplicate = await executeQuery(
+    "SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1",
+    [normalizedEmail, id]
+  );
+  if (duplicate.length) throw httpError(409, "El correo electrónico ya está registrado");
+
+  await executeQuery(
+    "UPDATE users SET name = ?, email = ?, updated_at = NOW() WHERE id = ?",
+    [normalizedName, normalizedEmail, id]
+  );
+
+  const users = await executeQuery(
+    "SELECT id, name, email, role, active FROM users WHERE id = ? LIMIT 1",
+    [id]
+  );
+  if (!users.length) throw httpError(404, "Usuario no encontrado");
+
+  return {
+    message: "Información de la cuenta actualizada correctamente",
+    user: toPublicUser(users[0])
+  };
+};
+
+export const updatePassword = async (id, { currentPassword, newPassword }) => {
+  if (!currentPassword || !newPassword) {
+    throw httpError(400, "La contraseña actual y la nueva son obligatorias");
+  }
+  if (newPassword.length < 8) {
+    throw httpError(400, "La contraseña nueva debe tener al menos 8 caracteres");
+  }
+
+  const users = await executeQuery(
+    "SELECT password_hash passwordHash FROM users WHERE id = ? LIMIT 1",
+    [id]
+  );
+  if (!users.length) throw httpError(404, "Usuario no encontrado");
+
+  const validPassword = await bcrypt.compare(currentPassword, users[0].passwordHash);
+  if (!validPassword) throw httpError(400, "La contraseña actual es incorrecta");
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  await executeQuery(
+    "UPDATE users SET password_hash = ?, updated_at = NOW() WHERE id = ?",
+    [passwordHash, id]
+  );
+
+  return { message: "Contraseña actualizada correctamente" };
+};
+
 export const updateUser = async (id, { role, active, name }) => {
   const users = await executeQuery("SELECT id FROM users WHERE id = ?", [id]);
   if (!users.length) throw httpError(404, "Usuario no encontrado");

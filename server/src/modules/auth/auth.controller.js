@@ -22,6 +22,22 @@ export const logout = (_req, res) => {
 
 export const me = (req, res) => res.json(authService.toPublicUser(req.user));
 
+export const updateAccount = async (req, res, next) => {
+  try {
+    res.json(await authService.updateAccount(req.user.id, req.body));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePassword = async (req, res, next) => {
+  try {
+    res.json(await authService.updatePassword(req.user.id, req.body));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const register = async (req, res, next) => {
   try { res.status(201).json(await authService.register(req.body)); } catch (error) { next(error); }
 };

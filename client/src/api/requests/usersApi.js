@@ -89,21 +89,20 @@ export const getNewnessUserAPI = (params) =>
 
 /**
  * Obtener información básica del usuario autenticado
- * @param {{ useId: number }} params (query params)
  */
-export const getBasicInformationAPI = (params) =>
-  httpCliente.get('auth/get_basic_information', params);
+export const getBasicInformationAPI = () =>
+  httpCliente.get('auth/me');
 
 /**
  * Actualizar datos de la cuenta del usuario autenticado
- * @param {{ name: string, username: string, email: string, useId: number }} params
+ * @param {{ name: string, email: string }} params
  */
 export const updateAccountAPI = (params) =>
   httpCliente.put('auth/update_account', params);
 
 /**
  * Actualizar contraseña del usuario autenticado
- * @param {{ currentPassword: string, newPassword: string, useId: number }} params
+ * @param {{ currentPassword: string, newPassword: string }} params
  */
 export const updatePasswordAPI = (params) =>
   httpCliente.put('auth/update_password', params);

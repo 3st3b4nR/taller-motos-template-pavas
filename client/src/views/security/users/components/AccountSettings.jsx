@@ -12,23 +12,21 @@ import { ChangePassword } from './ChangePassword';
 import Divider from '@mui/material/Divider';
 
 export const AccountSettings = ({ visible, setVisible }) => {
-  const { user } = useAuth();
+  const { user, updateCurrentUser } = useAuth();
   const [saving, setSaving] = useState(false);
 
   const methods = useForm({
-    defaultValues: { name: '', lastName: '', username: '', email: '' }
+    defaultValues: { name: '', email: '' }
   });
 
   const { handleSubmit, reset } = methods;
 
   useEffect(() => {
     if (visible && user?.useId) {
-      getBasicInformationAPI({ useId: user.useId })
+      getBasicInformationAPI()
         .then(({ data }) => {
           reset({
             name: data.name || '',
-            lastName: data.lastName || '',
-            username: data.username || '',
             email: data.email || '',
           });
         })
@@ -40,19 +38,18 @@ export const AccountSettings = ({ visible, setVisible }) => {
 
   const basicFields = useMemo(() => [
     { key: 'name', name: 'name', type: 'text', label: 'Nombre', grid: { xs: 12, sm: 6 } },
-    { key: 'lastName', name: 'lastName', type: 'text', label: 'Apellido', grid: { xs: 12, sm: 6 } },
-    { key: 'username', name: 'username', type: 'text', label: 'Usuario', grid: { xs: 12, sm: 6 } },
-    { key: 'email', name: 'email', type: 'text', label: 'Correo Electrónico', grid: { xs: 12, sm: 6 } },
+    { key: 'email', name: 'email', type: 'email', label: 'Correo Electrónico', grid: { xs: 12, sm: 6 } },
   ], []);
 
   const accordionData = useMemo(() => [
     { id: 'change-password', title: 'Cambiar contraseña', content: <ChangePassword /> },
   ], []);
 
-  const onSubmit = async ({ name, lastName, username, email }) => {
+  const onSubmit = async ({ name, email }) => {
     setSaving(true);
     try {
-      const { data } = await updateAccountAPI({ name, lastName, username, email, useId: user.useId });
+      const { data } = await updateAccountAPI({ name, email });
+      updateCurrentUser(data.user);
       showSuccess(data.message);
       setVisible(false);
     } catch (error) {

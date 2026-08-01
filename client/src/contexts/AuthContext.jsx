@@ -63,6 +63,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateCurrentUser = useCallback((changes) => {
+    setUser((currentUser) => {
+      const updatedUser = { ...currentUser, ...changes };
+      Cookies.set("userTaller", JSON.stringify(updatedUser), { expires: 1 });
+      return updatedUser;
+    });
+  }, []);
+
   const value = useMemo(() => ({
     user,
     loading,
@@ -72,8 +80,9 @@ export function AuthProvider({ children }) {
     isAdmin: user?.role === "ADMIN",
     login,
     logout,
+    updateCurrentUser,
     hasPermission: () => Boolean(user)
-  }), [user, loading, initializing, error, login, logout]);
+  }), [user, loading, initializing, error, login, logout, updateCurrentUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

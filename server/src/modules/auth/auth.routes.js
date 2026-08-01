@@ -15,6 +15,8 @@ const loginLimiter = rateLimit({
 authRoutes.post("/login", loginLimiter, controller.login);
 authRoutes.post("/logout", controller.logout);
 authRoutes.get("/me", verifyToken, controller.me);
+authRoutes.put("/update_account", verifyToken, controller.updateAccount);
+authRoutes.put("/update_password", verifyToken, controller.updatePassword);
 authRoutes.post("/register", verifyToken, authorize("ADMIN"), controller.register);
 authRoutes.get("/users", verifyToken, authorize("ADMIN"), controller.listUsers);
 authRoutes.patch("/users/:id", verifyToken, authorize("ADMIN"), controller.updateUser);
